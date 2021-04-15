@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="hit"
+            type="com.jeanpaulo.reignandroidtest.model.Hit" />
+
+    </data>
+
+    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingTop="12dp">
+
+
+            <TextView
+                android:id="@+id/txt_music_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="12dp"
+                android:paddingLeft="12dp"
+                android:textColor="#333"
+                android:textSize="22sp"
+                tools:text="@{hit.formatedTitle}" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:paddingTop="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="12dp"
+                    android:paddingLeft="12dp"
+                    android:textColor="#333"
+                    android:textSize="14sp"
+                    tools:text="@{hit.footerDetail}" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</layout>
