@@ -15,8 +15,8 @@ interface HitDao {
 
     //R
 
-    @Query("SELECT * FROM hit WHERE isDeleted = 0 ORDER BY createdAt DESC")
-    suspend fun getHits(): DataSource.Factory<Int ,HitEntity>
+    //@Query("SELECT * FROM hit WHERE isDeleted = 0 ORDER BY createdAt DESC")
+    //suspend fun getHits(): DataSource.Factory<Int ,HitEntity>
 
     //U
 

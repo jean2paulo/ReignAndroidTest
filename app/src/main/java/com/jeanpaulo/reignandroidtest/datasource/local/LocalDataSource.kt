@@ -1,7 +1,7 @@
 package com.jeanpaulo.reignandroidtest.datasource.local
 
 import androidx.paging.DataSource
-import com.jeanpaulo.reignandroidtest.datasource.local.util.Result
+import com.jeanpaulo.reignandroidtest.datasource.util.Result
 import com.jeanpaulo.reignandroidtest.datasource.local.dao.HitDao
 import com.jeanpaulo.reignandroidtest.datasource.local.util.DataSourceException
 import com.jeanpaulo.reignandroidtest.model.Hit
@@ -31,14 +31,8 @@ class LocalDataSource internal constructor(
         }
     }
 
-    override suspend fun getHits(page: List<Hit>): DataSource.Factory<Int, Hit> {
-        try {
-            return hitDao.getHits().map { it.toModel() }
-        } catch (e: Exception) {
-            throw DataSourceException(
-                DataSourceException.Error.UNKNOWN_EXCEPTION,
-                e.toString()
-            )
-        }
+    override suspend fun getHits(): DataSource.Factory<Int, Hit> {
+        //return hitDao.getHits().map { it.toModel() }
+        throw Exception("Not Implemented")
     }
 }

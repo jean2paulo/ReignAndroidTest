@@ -1,13 +1,14 @@
 package com.jeanpaulo.reignandroidtest.datasource.local
 
-import androidx.paging.DataSource
+import com.jeanpaulo.buscador_itunes.datasource.IDataSource
 import com.jeanpaulo.reignandroidtest.model.Hit
-import com.jeanpaulo.reignandroidtest.datasource.local.util.Result
+import com.jeanpaulo.reignandroidtest.datasource.util.Result
+import javax.sql.DataSource
 
 /**
  * Interface to the data layer.
  */
-interface ILocalDataSource {
+interface ILocalDataSource : IDataSource {
 
     //C
 
@@ -15,7 +16,7 @@ interface ILocalDataSource {
 
     //R
 
-    suspend fun getHits(page: List<Hit>): DataSource.Factory<Int, Hit>
+    suspend fun getHits(): androidx.paging.DataSource.Factory<Int, Hit>
 
     //U
 

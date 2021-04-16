@@ -1,4 +1,6 @@
-package com.jeanpaulo.reignandroidtest.datasource.local.util
+package com.jeanpaulo.reignandroidtest.datasource.util
+
+import com.jeanpaulo.reignandroidtest.datasource.local.util.DataSourceException
 
 /**
  * A generic class that holds a value with its loading status.

@@ -8,10 +8,11 @@ import retrofit2.http.Query
 /**
  * Interface to the data layer.
  */
-interface HackerNewsService {
+interface IHackerNewsService {
 
     @GET("search_by_date")
-    suspend fun searchMusic(
+    suspend fun searchByDate(
         @Query("query") term: String,
+        @Query("page") page: Int,
     ): Response<HackerNewsResponse>
 }

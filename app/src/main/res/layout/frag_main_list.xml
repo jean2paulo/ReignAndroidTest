@@ -6,8 +6,6 @@
 
         <import type="android.view.View" />
 
-        <import type="androidx.core.content.ContextCompat" />
-
         <variable
             name="viewmodel"
             type="com.jeanpaulo.reignandroidtest.viewmodel.HitViewModel" />
@@ -43,7 +41,7 @@
                     android:visibility="@{viewmodel.empty ? View.GONE : View.VISIBLE}">
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/music_list"
+                        android:id="@+id/hit_list"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@android:color/background_light"

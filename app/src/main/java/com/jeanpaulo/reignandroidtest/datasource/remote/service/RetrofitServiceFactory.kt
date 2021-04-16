@@ -10,7 +10,7 @@ import java.util.*
 class RetrofitServiceFactory {
 
     companion object {
-        val BASE_URL = "https://hn.algolia.com/api/v1"
+        val BASE_URL = "https://hn.algolia.com/api/v1/"
         lateinit var retrofit: Retrofit
             private set
     }
