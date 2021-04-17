@@ -9,10 +9,11 @@ import java.util.*
 @JsonClass(generateAdapter = true)
 data class HitJson(
     @Json(name = "objectID") val objectId: Long,
-    @Json(name = "story-title") val storyTitle: String?,
+    @Json(name = "story_title") val storyTitle: String?,
     @Json(name = "title") val title: String?,
     @Json(name = "author") val author: String?,
-    @Json(name = "created_at") val createdAt: Date?
+    @Json(name = "created_at") val createdAt: Date?,
+    @Json(name = "story_url") val storyUrl: String?,
 ) {
     fun getValidTitle(): String = storyTitle ?: (title ?: "NO TITLE")
 
@@ -21,6 +22,7 @@ data class HitJson(
         it.title = title
         it.author = author
         it.createdAt = createdAt
+        it.storyUrl = storyUrl
 
         it.localId = 0
         it.origin = Origin.REMOTE

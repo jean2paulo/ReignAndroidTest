@@ -19,7 +19,9 @@ package com.jeanpaulo.buscador_itunes.datasource.local
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.jeanpaulo.reignandroidtest.datasource.local.dao.GarbageDao
 import com.jeanpaulo.reignandroidtest.datasource.local.dao.HitDao
+import com.jeanpaulo.reignandroidtest.datasource.local.entity.GarbageEntity
 import com.jeanpaulo.reignandroidtest.datasource.local.entity.HitEntity
 import com.jeanpaulo.reignandroidtest.datasource.local.util.DateConverter
 
@@ -29,7 +31,7 @@ import com.jeanpaulo.reignandroidtest.datasource.local.util.DateConverter
  * Note that exportSchema should be true in production databases.
  */
 @Database(
-    entities = [HitEntity::class],
+    entities = [HitEntity::class, GarbageEntity::class],
     version = 1,
     exportSchema = false
 )
@@ -39,5 +41,7 @@ import com.jeanpaulo.reignandroidtest.datasource.local.util.DateConverter
 abstract class Database : RoomDatabase() {
 
     abstract fun hitDao(): HitDao
+
+    abstract fun garbageDao(): GarbageDao
 
 }

@@ -3,7 +3,7 @@ package com.jeanpaulo.reignandroidtest
 import android.app.Application
 import android.content.res.Configuration
 import com.facebook.stetho.Stetho
-import com.jeanpaulo.reignandroidtest.datasource.IRepository
+import com.jeanpaulo.reignandroidtest.datasource.Repository
 import com.jeanpaulo.reignandroidtest.datasource.local.ServiceLocator
 
 class CustomApplication : Application() {
@@ -12,7 +12,7 @@ class CustomApplication : Application() {
     // Overriding this method is totally optional!
 
     // Depends on the flavor,
-    val repository: IRepository
+    val repository: Repository
         get() = ServiceLocator.provideMusicRepository(this)
 
     override fun onCreate() {

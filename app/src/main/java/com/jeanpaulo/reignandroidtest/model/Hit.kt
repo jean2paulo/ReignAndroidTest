@@ -12,6 +12,7 @@ class Hit(
     var storyTitle: String? = null
     var author: String? = null
     var createdAt: Date? = null
+    var storyUrl: String? = null
 
     fun toEntity(): HitEntity = HitEntity(
         objectId = objectId,
@@ -19,7 +20,7 @@ class Hit(
         storyTitle = storyTitle,
         createdAt = createdAt,
         author = author,
-        isDeleted = isDeleted,
+        storyUrl = storyUrl,
         id = localId
     )
 
@@ -33,6 +34,5 @@ class Hit(
         get() = "$author - $formatedCreatedAtDate"
 
     override var localId: Long = 0
-    override var isDeleted: Boolean = false
     override var origin: Origin = Origin.UNDEF
 }

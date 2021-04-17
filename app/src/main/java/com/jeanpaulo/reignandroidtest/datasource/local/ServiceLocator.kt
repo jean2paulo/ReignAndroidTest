@@ -3,23 +3,21 @@ package com.jeanpaulo.reignandroidtest.datasource.local
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.room.Room
-import com.jeanpaulo.buscador_itunes.datasource.Repository
 import com.jeanpaulo.buscador_itunes.datasource.local.Database
 import com.jeanpaulo.buscador_itunes.datasource.remote.service.IHackerNewsService
 import com.jeanpaulo.buscador_itunes.datasource.remote.service.RetrofitServiceFactory
-import com.jeanpaulo.reignandroidtest.datasource.IRepository
-import com.jeanpaulo.reignandroidtest.datasource.remote.IRemoteDataSource
 import com.jeanpaulo.reignandroidtest.datasource.remote.RemoteDataSource
+import com.jeanpaulo.reignandroidtest.datasource.remote.RemoteDataSourceImpl
 
 object ServiceLocator {
     private val lock = Any()
     private var database: Database? = null
 
     @Volatile
-    var musicRepository: IRepository? = null
+    var musicRepository: com.jeanpaulo.reignandroidtest.datasource.Repository? = null
         @VisibleForTesting set
 
-    fun provideMusicRepository(context: Context): IRepository {
+    fun provideMusicRepository(context: Context): com.jeanpaulo.reignandroidtest.datasource.Repository {
         synchronized(this) {
             return musicRepository
                 ?: musicRepository
@@ -29,9 +27,9 @@ object ServiceLocator {
         }
     }
 
-    private fun createMusicRepository(context: Context): IRepository {
+    private fun createMusicRepository(context: Context): com.jeanpaulo.reignandroidtest.datasource.Repository {
         val newRepo =
-            Repository(
+            com.jeanpaulo.buscador_itunes.datasource.RepositoryImpl(
                 createRepository(),
                 createLocalDataSource(
                     context
@@ -41,19 +39,20 @@ object ServiceLocator {
         return newRepo
     }
 
-    private fun createRepository(): IRemoteDataSource {
+    private fun createRepository(): RemoteDataSource {
         RetrofitServiceFactory().build()
         val service = RetrofitServiceFactory.retrofit.create(IHackerNewsService::class.java)
-        return RemoteDataSource(service)
+        return RemoteDataSourceImpl(service)
     }
 
-    private fun createLocalDataSource(context: Context): LocalDataSource {
+    private fun createLocalDataSource(context: Context): LocalDataSourceImpl {
         val database = database
             ?: createDataBase(
                 context
             )
-        return LocalDataSource(
-            database.hitDao()
+        return LocalDataSourceImpl(
+            database.hitDao(),
+            database.garbageDao()
         )
     }
 

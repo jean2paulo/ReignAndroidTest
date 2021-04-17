@@ -1,6 +1,7 @@
 package com.jeanpaulo.reignandroidtest.view.adapter
 
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
@@ -27,7 +28,7 @@ class HitListAdapter(
             val layoutInflater = LayoutInflater.from(parent.getContext())
             val itemBinding: ItemHitBinding =
                 ItemHitBinding.inflate(layoutInflater, parent, false)
-            MusicViewHolder(itemBinding)
+            HitViewHolder(itemBinding)
         } else FooterViewHolder.create(
             {
                 viewModel.refresh()
@@ -39,7 +40,12 @@ class HitListAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (getItemViewType(position) == DATA_VIEW_TYPE) {
             val music = getItem(position)
-            (holder as MusicViewHolder).bind(music, listener)
+            val musicholder = (holder as HitViewHolder)
+            musicholder.bind(music, listener)
+            musicholder.itemView.setOnLongClickListener {
+                positionSelected = holder.adapterPosition
+                false
+            }
             //holder.itemView.setOnClickListener({ listenerFun(music) })
         } else (holder as FooterViewHolder).bind(state)
     }
@@ -68,12 +74,24 @@ class HitListAdapter(
         return super.getItemCount() != 0 && (state == NetworkState.LOADING || state == NetworkState.ERROR)
     }
 
-    class MusicViewHolder(val binding: ItemHitBinding) : RecyclerView.ViewHolder(binding.root) {
+
+    var positionSelected = -1
+
+    fun getItemSelected(): Hit? = getItem(positionSelected)
+
+    class HitViewHolder(val binding: ItemHitBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(hit: Hit?, listener: (Hit) -> Unit) {
             if (hit != null) {
                 binding.hit = hit
                 itemView.setOnClickListener { listener(hit) }
+                itemView.setOnCreateContextMenuListener { menu, v, menuInfo ->
+                    menu.setHeaderTitle(R.string.options)
+                    menu.add(
+                        Menu.NONE, R.id.context_action_delete,
+                        Menu.NONE, R.string.action_delete
+                    );
+                }
             }
         }
     }
@@ -81,10 +99,10 @@ class HitListAdapter(
     class FooterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         fun bind(status: NetworkState?) {
-           /* itemView.progress_bar.visibility =
-                if (status == NetworkState.LOADING) View.VISIBLE else View.INVISIBLE
-            itemView.txt_error.visibility =
-                if (status == NetworkState.ERROR) View.VISIBLE else View.INVISIBLE*/
+            /* itemView.progress_bar.visibility =
+                 if (status == NetworkState.LOADING) View.VISIBLE else View.INVISIBLE
+             itemView.txt_error.visibility =
+                 if (status == NetworkState.ERROR) View.VISIBLE else View.INVISIBLE*/
         }
 
         companion object {

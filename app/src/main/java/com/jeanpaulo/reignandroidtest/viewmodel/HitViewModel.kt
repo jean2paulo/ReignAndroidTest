@@ -4,42 +4,33 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.jeanpaulo.reignandroidtest.datasource.Constants
-import com.jeanpaulo.reignandroidtest.datasource.IRepository
+import com.jeanpaulo.reignandroidtest.datasource.Repository
 import com.jeanpaulo.reignandroidtest.datasource.local.util.DataSourceException
 import com.jeanpaulo.reignandroidtest.datasource.remote.util.NetworkState
 import com.jeanpaulo.reignandroidtest.model.Hit
-import com.jeanpaulo.reignandroidtest.view.util.Event
 
 class HitViewModel(
-    private val repository: IRepository
+    private val repository: Repository
 ) : ViewModel() {
 
     fun refresh() {
-        TODO("Not yet implemented")
+        //TODO This is freezing the view.. fix that
+        repository.refreshHits()
+        _networkState.postValue(NetworkState.DONE)
     }
 
-    fun buildResponseList() {
-
-        _networkState.postValue(NetworkState.LOADING)
-
-        val dataSourceFactory =
-            repository.getPagedDataSource(true) { _networkState.postValue(it) }
-
-        _hitList = LivePagedListBuilder(
-            dataSourceFactory,
-            PagedList.Config.Builder()
-                .setPageSize(Constants.PAGE_SIZE)
-                .setInitialLoadSizeHint(Constants.PAGE_SIZE * 2)
-                .setEnablePlaceholders(false)
-                .build()
-        ).build()
+    fun init() {
+        queryLiveData.postValue(Constants.QUERY)
     }
 
-    private var _hitList: LiveData<PagedList<Hit>>? = MutableLiveData<PagedList<Hit>>()
-    val hitList: LiveData<PagedList<Hit>>? = _hitList
+    fun delete(hit: Hit) {
+        repository.deleteHit(hit)
+    }
+
+    private val queryLiveData = MutableLiveData<String>()
+
 
     private var _errorLoading: MutableLiveData<DataSourceException?> =
         MutableLiveData()
@@ -65,6 +56,16 @@ class HitViewModel(
             }
         }
     }
+
+    private var forceUpdate: Boolean = false
+    private var _hitList: LiveData<PagedList<Hit>>? =
+        Transformations.switchMap<String, PagedList<Hit>>(queryLiveData) {
+            repository.getPagedHitList {
+                _networkState.postValue(it)
+            }
+        }
+    val hitList: LiveData<PagedList<Hit>>? = _hitList
+
 
     val empty: LiveData<Boolean> = Transformations.map(hitList!!) {
         it.isEmpty()

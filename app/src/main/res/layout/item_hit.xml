@@ -13,7 +13,7 @@
     <LinearLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="3dp"
+        android:layout_margin="5dp"
         android:clickable="true"
         android:focusable="true"
         android:orientation="horizontal">
@@ -32,7 +32,7 @@
                 android:paddingStart="12dp"
                 android:paddingLeft="12dp"
                 android:textColor="#333"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 tools:text="@{hit.formatedTitle}" />
 
 
@@ -40,7 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:paddingTop="12dp">
+                android:paddingTop="6dp">
 
                 <TextView
                     android:layout_width="wrap_content"

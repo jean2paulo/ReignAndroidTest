@@ -11,21 +11,21 @@ interface HitDao {
     //C
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertHit(hit: HitEntity): kotlin.Long
+    fun insertHit(hit: HitEntity): kotlin.Long
 
     //R
 
-    //@Query("SELECT * FROM hit WHERE isDeleted = 0 ORDER BY createdAt DESC")
-    //suspend fun getHits(): DataSource.Factory<Int ,HitEntity>
+    @Query("SELECT * FROM hit WHERE objectId NOT IN (SELECT objectId FROM garbage)  ORDER BY createdAt DESC")
+    fun getHits(): DataSource.Factory<Int, HitEntity>
 
     //U
 
     @Update
-    suspend fun updateHit(hit: HitEntity): Int
+    fun updateHit(hit: HitEntity): Int
 
     //D
 
     @Query("DELETE FROM hit")
-    suspend fun deleteHits(): kotlin.Int
+    fun deleteHits(): kotlin.Int
 
 }

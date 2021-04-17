@@ -4,4 +4,6 @@
     <string name="no_hit_found">No hit found!</string>
     <string name="loading_hit_error">Oh no! Something is going wrong! Please, try again!</string>
     <string name="no_internet_connection">No internet connection</string>
+    <string name="action_delete">Delete</string>
+    <string name="options">Options</string>
 </resources>

@@ -3,11 +3,13 @@ package com.jeanpaulo.reignandroidtest.view.fragments
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
@@ -43,6 +45,18 @@ class HitListFragment : Fragment() {
         return viewBinding.root
     }
 
+
+    //MENU FUNCTIONS
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        val hit = hitListAdapter.getItemSelected() ?: return false
+
+        when (item.itemId) {
+            R.id.context_action_delete -> hit.localId?.let { viewModel.delete(hit) }
+        }
+        return super.onContextItemSelected(item)
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
@@ -59,12 +73,19 @@ class HitListFragment : Fragment() {
         viewBinding.lifecycleOwner = this.viewLifecycleOwner
         setupRefreshLayout(viewBinding.refreshLayout, viewBinding.hitList)
 
+        setupToolbar()
         setupListAdapter()
         setupSnackBar()
-        initState()
+        setObservables()
+
+        viewModel.init()
     }
 
-    fun setupListAdapter(){
+    fun setupToolbar() {
+        listener.setHomeUpAsEnable(false)
+    }
+
+    fun setupListAdapter() {
         val viewModel = viewBinding.viewmodel
         if (viewModel != null) {
 
@@ -72,7 +93,7 @@ class HitListFragment : Fragment() {
                 HitListAdapter(
                     viewModel
                 ) { it ->
-                    openHit(it.formatedTitle, "www.google.com")
+                    openHit(it.formatedTitle, it.storyUrl!!)
                 }
             viewBinding.hitList.layoutManager =
                 CustomLinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
@@ -98,12 +119,10 @@ class HitListFragment : Fragment() {
         //view?.setupSnackbar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
     }
 
-    fun initState() {
-        viewModel.buildResponseList()
-
+    fun setObservables() {
         viewModel.hitList?.observe(viewLifecycleOwner, Observer { it: PagedList<Hit> ->
             hitListAdapter.submitList(it)
-            hitListAdapter.notifyDataSetChanged()
+            //hitListAdapter.notifyDataSetChanged()
         })
 
         viewModel.errorLoading.observe(viewLifecycleOwner, Observer { exception ->
@@ -135,16 +154,16 @@ class HitListFragment : Fragment() {
     }
 
     private fun openHit(formatedTitle: String, url: String) {
-
-        /*val action = HitListFragmentDirections
-            .actionPlaylistFragmentToAddEditPlaylistFragment(
+        val action = HitListFragmentDirections
+            .actionHitListFragmentToHitDetailFragment(
                 formatedTitle,
                 url
             )
-        findNavController().navigate(action)*/
+        findNavController().navigate(action)
     }
 }
 
 interface HitListFragmentListener {
-
+    fun setTitle(title: String)
+    fun setHomeUpAsEnable(boolean: Boolean)
 }

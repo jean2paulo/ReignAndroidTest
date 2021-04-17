@@ -2,8 +2,10 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
-}
 
+    // as related: https://stackoverflow.com/questions/50686907/safeargs-library-doesnt-generate-direction-class
+    id 'androidx.navigation.safeargs.kotlin'
+}
 
 android {
     compileSdkVersion 29
@@ -87,10 +89,10 @@ dependencies {
     implementation 'androidx.paging:paging-runtime:2.1.2'
 
     //RecyclerView
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.0'
 
     //Livedata
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
 
     //SwipeRefresh
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"

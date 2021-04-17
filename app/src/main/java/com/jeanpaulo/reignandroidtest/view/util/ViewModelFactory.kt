@@ -20,7 +20,7 @@ import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.savedstate.SavedStateRegistryOwner
-import com.jeanpaulo.reignandroidtest.datasource.IRepository
+import com.jeanpaulo.reignandroidtest.datasource.Repository
 import com.jeanpaulo.reignandroidtest.viewmodel.HitViewModel
 
 /**
@@ -28,7 +28,7 @@ import com.jeanpaulo.reignandroidtest.viewmodel.HitViewModel
  */
 @Suppress("UNCHECKED_CAST")
 class ViewModelFactory constructor(
-    private val repository: IRepository,
+    private val repository: Repository,
     owner: SavedStateRegistryOwner,
     defaultArgs: Bundle? = null
 ) : AbstractSavedStateViewModelFactory(owner, defaultArgs) {
