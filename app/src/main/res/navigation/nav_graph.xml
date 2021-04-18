@@ -34,7 +34,7 @@
     <fragment
         android:id="@+id/hit_detail_fragment_dest"
         android:name="com.jeanpaulo.reignandroidtest.view.fragments.HitDetailFragment"
-        android:label="{title}">
+        android:label="@{title}">
 
         <argument
             android:name="title"

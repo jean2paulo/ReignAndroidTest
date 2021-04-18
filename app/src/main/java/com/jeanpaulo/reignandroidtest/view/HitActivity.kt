@@ -43,6 +43,8 @@ class HitActivity : AppCompatActivity(),
                 super.onSupportNavigateUp()
     }
 
+    // CALLING FROM FRAGMENT
+
     override fun setTitle(title: String) {
         supportActionBar!!.title = title
     }

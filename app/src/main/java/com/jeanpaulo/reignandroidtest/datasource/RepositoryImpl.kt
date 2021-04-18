@@ -64,16 +64,18 @@ class RepositoryImpl(
         }
     }
 
-    override fun refreshHits(): Boolean {
+    override fun refreshHits(): Result<Boolean> {
         return runBlocking(ioDispatcher) {
             val result: Result<List<Hit>> = remote.getHits(Constants.QUERY, 0)
+
             if (result.isSuccessful) {
                 val hits = (result as Result.Success<List<Hit>>).data
                 val resultSave = local.saveHits(hits)
-                return@runBlocking resultSave.isSuccessful
-            }
 
-            return@runBlocking false
+                return@runBlocking Result.Success(result.isSuccessful)
+            } else
+                return@runBlocking result as Result.Error
+
         }
     }
 

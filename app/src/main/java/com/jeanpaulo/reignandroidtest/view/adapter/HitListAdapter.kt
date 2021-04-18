@@ -39,10 +39,14 @@ class HitListAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (getItemViewType(position) == DATA_VIEW_TYPE) {
-            val music = getItem(position)
-            val musicholder = (holder as HitViewHolder)
-            musicholder.bind(music, listener)
-            musicholder.itemView.setOnLongClickListener {
+            val hit = getItem(position)
+            val viewHolder = (holder as HitViewHolder)
+            viewHolder.bind(hit, listener)
+            viewHolder.itemView.setOnClickListener {
+                positionSelected = holder.adapterPosition
+                listener(hit!!)
+            }
+            viewHolder.itemView.setOnLongClickListener {
                 positionSelected = holder.adapterPosition
                 false
             }
@@ -77,14 +81,15 @@ class HitListAdapter(
 
     var positionSelected = -1
 
-    fun getItemSelected(): Hit? = getItem(positionSelected)
+    fun getItemSelected(): Hit? = if (positionSelected > 0) getItem(positionSelected) else null
+
+    fun getHit(position: Int): Hit? = getItem(position)
 
     class HitViewHolder(val binding: ItemHitBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(hit: Hit?, listener: (Hit) -> Unit) {
             if (hit != null) {
                 binding.hit = hit
-                itemView.setOnClickListener { listener(hit) }
                 itemView.setOnCreateContextMenuListener { menu, v, menuInfo ->
                     menu.setHeaderTitle(R.string.options)
                     menu.add(

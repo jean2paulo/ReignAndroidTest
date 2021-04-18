@@ -33,14 +33,40 @@
             android:id="@+id/refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <!--app:enabled="@{viewmodel.dataLoading}"
-            app:refreshing="@{viewmodel.dataLoading}"-->
 
-
-            <WebView
-                android:id="@+id/webview"
+            <RelativeLayout
+                android:id="@+id/tasks_container_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:orientation="vertical">
+
+                <WebView
+                    android:id="@+id/webview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <LinearLayout
+                    android:id="@+id/loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:orientation="vertical">
+
+                    <ProgressBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/loading"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </RelativeLayout>
 
         </com.jeanpaulo.reignandroidtest.view.util.ScrollChildSwipeRefreshLayout>
 

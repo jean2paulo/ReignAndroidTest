@@ -1,8 +1,10 @@
 package com.jeanpaulo.reignandroidtest.model
 
+import android.text.format.DateUtils
 import com.jeanpaulo.reignandroidtest.datasource.local.entity.HitEntity
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class Hit(
     val objectId: Long
@@ -28,7 +30,13 @@ class Hit(
         get() = title ?: (storyTitle ?: "NO TITLE")
 
     val formatedCreatedAtDate: String
-        get() = if (createdAt != null) SimpleDateFormat("yyyy").format(createdAt) else "-"
+        get() = if (createdAt != null) {
+            DateUtils.getRelativeTimeSpanString(
+                createdAt!!.time,
+                Calendar.getInstance().timeInMillis,
+                DateUtils.MINUTE_IN_MILLIS
+            ).toString()
+        } else "-"
 
     val footerDetail: String
         get() = "$author - $formatedCreatedAtDate"

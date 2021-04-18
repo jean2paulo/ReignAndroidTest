@@ -58,20 +58,13 @@
                     android:orientation="vertical"
                     android:visibility="@{viewmodel.empty ? View.VISIBLE : View.GONE}">
 
-                    <ImageView
-                        android:id="@+id/no_tasks_icon"
-                        android:layout_width="96dp"
-                        android:layout_height="96dp"
-                        android:layout_gravity="center"
-                        android:src="@mipmap/ic_launcher" />
-
                     <TextView
-                        android:id="@+id/no_tasks_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:textSize="14sp"
                         android:layout_marginBottom="8dp"
-                        android:text="@string/no_hit_found" />
+                        android:text="@string/no_hit" />
                 </LinearLayout>
 
                 <TextView

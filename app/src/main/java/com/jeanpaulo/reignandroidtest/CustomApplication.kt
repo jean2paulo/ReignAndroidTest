@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.res.Configuration
 import com.facebook.stetho.Stetho
 import com.jeanpaulo.reignandroidtest.datasource.Repository
-import com.jeanpaulo.reignandroidtest.datasource.local.ServiceLocator
+import com.jeanpaulo.reignandroidtest.datasource.ServiceLocator
 
 class CustomApplication : Application() {
 

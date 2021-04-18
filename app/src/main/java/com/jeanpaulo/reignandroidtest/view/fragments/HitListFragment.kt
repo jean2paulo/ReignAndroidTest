@@ -12,10 +12,13 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.jeanpaulo.buscador_itunes.util.getViewModelFactory
+import com.jeanpaulo.buscador_itunes.util.setupSnackbar
 import com.jeanpaulo.reignandroidtest.R
-import com.jeanpaulo.reignandroidtest.databinding.FragMainListBinding
+import com.jeanpaulo.reignandroidtest.databinding.FragHitListBinding
 import com.jeanpaulo.reignandroidtest.datasource.local.util.DataSourceException
 import com.jeanpaulo.reignandroidtest.model.Hit
 import com.jeanpaulo.reignandroidtest.view.adapter.HitListAdapter
@@ -27,10 +30,9 @@ import java.lang.ClassCastException
 class HitListFragment : Fragment() {
 
     private val viewModel: HitViewModel by viewModels<HitViewModel> { getViewModelFactory() }
-    private lateinit var viewBinding: FragMainListBinding
+    private lateinit var viewBinding: FragHitListBinding
 
     private lateinit var hitListAdapter: HitListAdapter
-
     lateinit var listener: HitListFragmentListener
 
     override fun onCreateView(
@@ -38,15 +40,14 @@ class HitListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewBinding = FragMainListBinding.inflate(inflater, container, false).apply {
+        viewBinding = FragHitListBinding.inflate(inflater, container, false).apply {
             viewmodel = viewModel
         }
         setHasOptionsMenu(true)
         return viewBinding.root
     }
 
-
-    //MENU FUNCTIONS
+    //MENU CONTEXT FUNCTIONS
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
         val hit = hitListAdapter.getItemSelected() ?: return false
@@ -92,12 +93,32 @@ class HitListFragment : Fragment() {
             hitListAdapter =
                 HitListAdapter(
                     viewModel
-                ) { it ->
-                    openHit(it.formatedTitle, it.storyUrl!!)
+                ) {
+                    viewModel.openHit(it)
                 }
             viewBinding.hitList.layoutManager =
                 CustomLinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
             viewBinding.hitList.adapter = hitListAdapter
+
+            val simpleItemTouchCallback = object :
+                ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    return false
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val hit = hitListAdapter.getHit(viewHolder.bindingAdapterPosition)
+                    viewModel.delete(hit!!)
+                }
+
+            }
+
+            val itemTouchHelper: ItemTouchHelper = ItemTouchHelper(simpleItemTouchCallback);
+            itemTouchHelper.attachToRecyclerView(viewBinding.hitList)
 
             /*val itemDecorator =
                 DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
@@ -116,7 +137,7 @@ class HitListFragment : Fragment() {
     }
 
     private fun setupSnackBar() {
-        //view?.setupSnackbar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+        activity?.setupSnackbar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
     }
 
     fun setObservables() {
@@ -125,15 +146,16 @@ class HitListFragment : Fragment() {
             //hitListAdapter.notifyDataSetChanged()
         })
 
-        viewModel.errorLoading.observe(viewLifecycleOwner, Observer { exception ->
-            if (exception != null) {
-                viewBinding.txtError.visibility = View.VISIBLE
-                viewBinding.txtError.text = showException(exception)
-            } else
-                viewBinding.txtError.visibility = View.GONE
-        })
+        viewModel.openHitEvent.observe(viewLifecycleOwner, Observer {
+            val hit = hitListAdapter.getItemSelected() ?: return@Observer
 
-        //view components
+            val action = HitListFragmentDirections
+                .actionHitListFragmentToHitDetailFragment(
+                    hit.formatedTitle,
+                    hit.storyUrl
+                )
+            findNavController().navigate(action)
+        })
 
         viewBinding.txtError.setOnClickListener {
             viewModel.refresh()
@@ -151,15 +173,6 @@ class HitListFragment : Fragment() {
                 exception.toString()
             }
         }
-    }
-
-    private fun openHit(formatedTitle: String, url: String) {
-        val action = HitListFragmentDirections
-            .actionHitListFragmentToHitDetailFragment(
-                formatedTitle,
-                url
-            )
-        findNavController().navigate(action)
     }
 }
 

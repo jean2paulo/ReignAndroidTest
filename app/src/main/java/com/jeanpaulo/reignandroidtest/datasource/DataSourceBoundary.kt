@@ -21,12 +21,6 @@ class DataSourceBoundary(
 ) : PagedList.BoundaryCallback<Hit>() {
 
     private var lastRequestedPage = 1
-
-    private val _networkErrors = MutableLiveData<String>()
-
-    val networkErrors: LiveData<String>
-        get() = _networkErrors
-
     private var isRequestInProgress = false
 
     private suspend fun requestAndSaveData(query: String) {
@@ -41,10 +35,8 @@ class DataSourceBoundary(
                 lastRequestedPage++
                 isRequestInProgress = false
             }
-        } else {
-            _networkErrors.postValue((result as Result.Error).toString())
-            isRequestInProgress = false
-        }
+        } else isRequestInProgress = false
+
     }
 
 
