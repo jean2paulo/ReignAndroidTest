@@ -16,11 +16,11 @@ class DataSourceBoundary(
     private val query: String,
     private val remote: RemoteDataSource,
     private val local: LocalDataSource,
-    private val ioDispatcher: CoroutineDispatcher,
+    private val scope: CoroutineScope,
     private val listener: (NetworkState) -> Unit
 ) : PagedList.BoundaryCallback<Hit>() {
 
-    private var lastRequestedPage = 1
+    private var lastRequestedPage = 0
     private var isRequestInProgress = false
 
     private suspend fun requestAndSaveData(query: String) {
@@ -41,7 +41,7 @@ class DataSourceBoundary(
 
 
     override fun onZeroItemsLoaded() {
-        GlobalScope.async(ioDispatcher) {
+        scope.async(Dispatchers.IO) {
             listener(NetworkState.LOADING)
             requestAndSaveData(query)
             listener(NetworkState.DONE)
@@ -49,6 +49,6 @@ class DataSourceBoundary(
     }
 
     override fun onItemAtEndLoaded(itemAtEnd: Hit) {
-        GlobalScope.async(ioDispatcher) { requestAndSaveData(query) }
+        scope.async(Dispatchers.IO) { requestAndSaveData(query) }
     }
 }
