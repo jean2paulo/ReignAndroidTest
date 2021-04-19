@@ -75,13 +75,13 @@ class HitDetailFragment : Fragment() {
 
             fun onPageStarted(view: WebView?, url: String?) {
                 loadingFinished = false
-                viewDataBinding.loading.visibility = View.VISIBLE
+                //viewDataBinding.loading.visibility = View.VISIBLE
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 if (!redirect) {
                     loadingFinished = true
-                    viewDataBinding.loading.visibility = View.GONE
+                    //viewDataBinding.loading.visibility = View.GONE
                 } else {
                     redirect = false
                 }
