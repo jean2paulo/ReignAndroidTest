@@ -82,11 +82,11 @@ class HitListFragment : Fragment() {
         viewModel.init()
     }
 
-    fun setupToolbar() {
+    private fun setupToolbar() {
         listener.setHomeUpAsEnable(false)
     }
 
-    fun setupListAdapter() {
+    private fun setupListAdapter() {
         val viewModel = viewBinding.viewmodel
         if (viewModel != null) {
 
@@ -140,7 +140,7 @@ class HitListFragment : Fragment() {
         activity?.setupSnackbar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
     }
 
-    fun setObservables() {
+    private fun setObservables() {
         viewModel.hitList?.observe(viewLifecycleOwner, Observer { it: PagedList<Hit> ->
             hitListAdapter.submitList(it)
             //hitListAdapter.notifyDataSetChanged()

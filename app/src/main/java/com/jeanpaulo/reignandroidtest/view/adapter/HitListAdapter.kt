@@ -81,7 +81,7 @@ class HitListAdapter(
 
     var positionSelected = -1
 
-    fun getItemSelected(): Hit? = if (positionSelected > 0) getItem(positionSelected) else null
+    fun getItemSelected(): Hit? = if (positionSelected > -1) getItem(positionSelected) else null
 
     fun getHit(position: Int): Hit? = getItem(position)
 

@@ -4,14 +4,10 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.*
 import androidx.paging.PagedList
 import com.jeanpaulo.reignandroidtest.R
-import com.jeanpaulo.reignandroidtest.datasource.Constants
 import com.jeanpaulo.reignandroidtest.datasource.Repository
-import com.jeanpaulo.reignandroidtest.datasource.local.util.DataSourceException
 import com.jeanpaulo.reignandroidtest.datasource.remote.util.NetworkState
 import com.jeanpaulo.reignandroidtest.model.Hit
 import com.jeanpaulo.reignandroidtest.view.util.Event
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class HitViewModel(
@@ -26,14 +22,18 @@ class HitViewModel(
     private val _snackbarText = MutableLiveData<Event<Int>>()
     val snackbarText: LiveData<Event<Int>> = _snackbarText
 
-    private var _hitList: LiveData<PagedList<Hit>>? =
-        Transformations.switchMap(queryLiveData) {
-            repository.getPagedHitList(_networkState::postValue)
+    private var _hitList: LiveData<PagedList<Hit>> =
+        Transformations.switchMap(queryLiveData) { it: String? ->
+            repository.getPagedHitList()
         }
-    val hitList: LiveData<PagedList<Hit>>? = _hitList
+
+    val hitList: LiveData<PagedList<Hit>> = _hitList
 
     fun init() {
-        queryLiveData.postValue(Constants.QUERY)
+        viewModelScope.launch {
+            repository.buildPagedList(_networkState::postValue, viewModelScope).await()
+            queryLiveData.postValue("qualquer coisa funciona aqui")
+        }
     }
 
     fun openHit(hit: Hit) {
@@ -43,22 +43,18 @@ class HitViewModel(
     fun delete(hit: Hit) {
         hit.objectId?.let {
             viewModelScope.launch {
-                val result = repository.deleteHit(hit)
-                if (result)
-                    showSnackbarMessage(R.string.hit_removed)
+                repository.deleteHit(hit)
+                showSnackbarMessage(R.string.hit_removed)
             }
         }
     }
 
     fun refresh() {
-        GlobalScope.launch {
-            val result = repository.refreshHits()
+        viewModelScope.launch {
+            val result = repository.refreshHits().await()
             _networkState.postValue(NetworkState.DONE)
-
-            viewModelScope.launch {
-                if (!result.isSuccessful)
-                    showSnackbarMessage(R.string.error_update_hit)
-            }
+            if (!result.isSuccessful)
+                showSnackbarMessage(R.string.error_update_hit)
         }
     }
 

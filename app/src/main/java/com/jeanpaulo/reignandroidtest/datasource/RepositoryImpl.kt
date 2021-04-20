@@ -1,13 +1,10 @@
-package com.jeanpaulo.buscador_itunes.datasource
+package com.jeanpaulo.reignandroidtest.datasource
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
-import com.jeanpaulo.reignandroidtest.datasource.Constants
-import com.jeanpaulo.reignandroidtest.datasource.Repository
 import com.jeanpaulo.reignandroidtest.datasource.local.LocalDataSource
-import com.jeanpaulo.reignandroidtest.datasource.local.util.DataSourceException
-import com.jeanpaulo.reignandroidtest.datasource.DataSourceBoundary
 import com.jeanpaulo.reignandroidtest.datasource.remote.RemoteDataSource
 import com.jeanpaulo.reignandroidtest.datasource.remote.util.NetworkState
 import com.jeanpaulo.reignandroidtest.datasource.util.Result
@@ -20,25 +17,28 @@ import kotlinx.coroutines.*
  */
 class RepositoryImpl(
     private val remote: RemoteDataSource,
-    private val local: LocalDataSource,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val local: LocalDataSource
 ) : Repository {
 
-    override fun getPagedHitList(
-        listener: (NetworkState) -> Unit
-    ): LiveData<PagedList<Hit>> {
-        return runBlocking(ioDispatcher) {
-            try {
+    private lateinit var pagedLiveData: LiveData<PagedList<Hit>>
+    override fun getPagedHitList(): LiveData<PagedList<Hit>> = pagedLiveData
+
+    override suspend fun buildPagedList(
+        listener: (NetworkState) -> Unit,
+        scope: CoroutineScope
+    ): Deferred<Result<Boolean>> {
+        return withContext(Dispatchers.IO) {
+            async {
                 val factory = local.getHits()
                 val boundary = DataSourceBoundary(
                     query = Constants.QUERY,
                     remote,
                     local,
-                    ioDispatcher,
-                    listener
+                    scope,
+                    listener,
                 )
 
-                val pagedList: LiveData<PagedList<Hit>> = LivePagedListBuilder(
+                pagedLiveData = LivePagedListBuilder(
                     factory,
                     PagedList.Config.Builder()
                         .setPageSize(Constants.PAGE_SIZE)
@@ -48,35 +48,35 @@ class RepositoryImpl(
                 ).setBoundaryCallback(boundary)
                     .build()
 
-                return@runBlocking pagedList
-            } catch (e: Exception) {
-                val dataSourceException =
-                    DataSourceException(DataSourceException.Error.UNKNOWN_EXCEPTION, e.message!!)
-                throw dataSourceException
+                return@async Result.Success(true)
             }
         }
     }
 
-    override fun deleteHit(hit: Hit): Boolean {
-        return runBlocking(ioDispatcher) {
-            val result = local.deleteHit(hit)
-            return@runBlocking result.isSuccessful
+
+    override suspend fun deleteHit(hit: Hit): Job {
+        return withContext(Dispatchers.IO) {
+            launch {
+                val result = local.deleteHit(hit)
+                result.isSuccessful
+            }
         }
     }
 
-    override fun refreshHits(): Result<Boolean> {
-        return runBlocking(ioDispatcher) {
-            val result: Result<List<Hit>> = remote.getHits(Constants.QUERY, 0)
+    override suspend fun refreshHits(): Deferred<Result<Boolean>> {
+        return withContext(Dispatchers.IO) {
+            async {
+                val result: Result<List<Hit>> = remote.getHits(Constants.QUERY, 0)
 
-            if (result.isSuccessful) {
-                val hits = (result as Result.Success<List<Hit>>).data
-                val resultSave = local.saveHits(hits)
+                if (result.isSuccessful) {
+                    val hits = (result as Result.Success<List<Hit>>).data
+                    val resultSave = local.saveHits(hits)
 
-                return@runBlocking Result.Success(result.isSuccessful)
-            } else
-                return@runBlocking result as Result.Error
-
+                    return@async Result.Success(result.isSuccessful && resultSave.isSuccessful)
+                } else {
+                    return@async result as Result.Error
+                }
+            }
         }
     }
-
 }
